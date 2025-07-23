@@ -5,6 +5,7 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Checkout code
@@ -15,11 +16,27 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install frontend dependencies
+        working-directory: simple-crud
         run: npm ci
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
+
+      - name: Start backend
+        run: node server.js &
+      
+      - name: Start frontend
+        working-directory: simple-crud
+        run: npm start &
+      
+      - name: Wait for frontend and backend to be ready
+        run: |
+          npx wait-on http://localhost:3000
+          npx wait-on http://localhost:4000
 
       - name: Run Playwright tests
         run: npx playwright test

@@ -16,11 +16,7 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install root dependencies
-        run: npm ci
-
-      - name: Install frontend dependencies
-        working-directory: simple-crud
+      - name: Install all dependencies
         run: npm ci
 
       - name: Install Playwright browsers
@@ -30,7 +26,6 @@ jobs:
         run: node server.js &
 
       - name: Start frontend
-        working-directory: simple-crud
         run: HOST=0.0.0.0 npm start &
 
       - name: Wait for frontend and backend to be ready
@@ -49,7 +44,6 @@ jobs:
           path: playwright-report/
 
       - name: Run code coverage
-        working-directory: simple-crud
         run: npm run coverage
 
       - name: Upload coverage report
@@ -57,4 +51,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: simple-crud/coverage/
+          path: coverage/
